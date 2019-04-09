@@ -18,7 +18,7 @@ declare(strict_types=1);
 
 namespace Bartlett\Tests\Reflect\Model;
 
-use Bartlett\Reflect\Exception\ModelException;
+use Bartlett\Reflect\Application\Exception\ModelException;
 
 /**
  * Unit Test Case that covers Bartlett\Reflect\Model\ParameterModel

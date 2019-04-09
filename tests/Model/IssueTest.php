@@ -18,7 +18,7 @@ declare(strict_types=1);
 
 namespace Bartlett\Tests\Reflect\Model;
 
-use Bartlett\Reflect\Client;
+use Bartlett\Reflect\Application\Model\ClassModel;
 
 /**
  * Tests for PHP_CompatInfo, retrieving reference elements,
@@ -31,13 +31,9 @@ use Bartlett\Reflect\Client;
  * @license    https://opensource.org/licenses/BSD-3-Clause The 3-Clause BSD License
  * @link       http://php5.laurent-laville.org/reflect/
  */
-class IssueTest extends \PHPUnit\Framework\TestCase
+class IssueTest extends GenericModelTest
 {
-    const GH4 = 'packages.php';
-
-    protected static $fixtures;
-    protected static $analyserId;
-    protected static $api;
+    private const GH4 = 'packages.php';
 
     /**
      * Sets up the shared fixture.
@@ -46,15 +42,8 @@ class IssueTest extends \PHPUnit\Framework\TestCase
      */
     public static function setUpBeforeClass()
     {
-        self::$fixtures = dirname(__DIR__) . DIRECTORY_SEPARATOR
-            . 'fixtures' . DIRECTORY_SEPARATOR;
-
-        self::$analyserId = 'Bartlett\Reflect\Analyser\ReflectionAnalyser';
-
-        $client = new Client();
-
-        // request for a Bartlett\Reflect\Api\Analyser
-        self::$api = $client->api('analyser');
+        self::$fixture = self::GH4;
+        parent::setUpBeforeClass();
     }
 
     /**
@@ -68,17 +57,12 @@ class IssueTest extends \PHPUnit\Framework\TestCase
      */
     public function testBugGH4()
     {
-        $dataSource = self::$fixtures . self::GH4;
-        $analysers  = array('reflection');
-        $metrics    = self::$api->run($dataSource, $analysers);
-        $models     = $metrics[self::$analyserId];
-
         $c = 0;    // empty namespace, class MyGlobalClass
 
         $this->assertInstanceOf(
-            'Bartlett\Reflect\Model\ClassModel',
-            $models[$c]
+            ClassModel::class,
+            self::$models[$c]
         );
-        $this->assertEquals('MyGlobalClass', $models[$c]->getName());
+        $this->assertEquals('MyGlobalClass', self::$models[$c]->getName());
     }
 }

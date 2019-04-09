@@ -44,7 +44,7 @@ abstract class GenericModelTest extends \PHPUnit\Framework\TestCase
     protected static $fixtures;
     protected static $fixture;
     protected static $models;
-    protected static $api;
+    protected static $commandBus;
 
     /**
      * Sets up the shared fixture.
@@ -74,7 +74,7 @@ abstract class GenericModelTest extends \PHPUnit\Framework\TestCase
             new InvokeInflector()
         );
 
-        $commandBus = new CommandBus([$handlerMiddleware]);
+        self::$commandBus = new CommandBus([$handlerMiddleware]);
 
         $analyserId   = ReflectionAnalyser::class;
         $dataSource   = self::$fixture;
@@ -82,7 +82,7 @@ abstract class GenericModelTest extends \PHPUnit\Framework\TestCase
 
         $command = new AnalyserRunCommand($dataSource, $analysers, true);
 
-        $metrics = $commandBus->handle($command);
+        $metrics = self::$commandBus->handle($command);
         self::$models = $metrics[$analyserId];
     }
 }

@@ -192,7 +192,7 @@ class Application extends \Symfony\Component\Console\Application
         }
         $filename = null;
 
-        throw new \RuntimeException('No configuration file available');
+        throw new \RuntimeException('No configuration file found in BARTLETT_SCAN_DIR paths');
     }
 
     public function setDispatcher(EventDispatcherInterface $dispatcher)

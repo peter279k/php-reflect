@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Bartlett\Reflect\Application\Command;
 
-use Bartlett\Reflect\Model\ClassModel;
+use Bartlett\Reflect\Application\Model\ClassModel;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * PHP version 7
@@ -21,16 +22,20 @@ class ReflectionClassHandler implements CommandHandlerInterface
     {
         $analyserCommand = new AnalyserRunCommand(
             $command->source,
-            ['reflection']
+            ['reflection'],
+            false
         );
 
-        $analyserRun = new AnalyserRunHandler();
+        $analyserRun = new AnalyserRunHandler(
+            new EventDispatcher(),
+            ''
+        );
 
         $metrics = $analyserRun($analyserCommand);
 
         $class = $command->class;
 
-        $collect = $metrics['Bartlett\Reflect\Analyser\ReflectionAnalyser']->filter(
+        $collect = $metrics['Bartlett\Reflect\Application\Analyser\ReflectionAnalyser']->filter(
             function ($element) use ($class) {
                 return $element instanceof ClassModel
                     && $element->getName() === $class;

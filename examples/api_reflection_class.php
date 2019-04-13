@@ -12,18 +12,35 @@
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-use Bartlett\Reflect\Client;
+use Bartlett\Reflect\Application\Command\ReflectionClassCommand;
+use Bartlett\Reflect\Application\Command\ReflectionClassHandler;
+use League\Tactician\CommandBus;
+use League\Tactician\Handler\CommandHandlerMiddleware;
+use League\Tactician\Handler\Locator\InMemoryLocator;
+use League\Tactician\Handler\CommandNameExtractor\ClassNameExtractor;
+use League\Tactician\Handler\MethodNameInflector\InvokeInflector;
 
-// creates an instance of client
-$client = new Client();
+$locator = new InMemoryLocator();
+$locator->addHandler(
+    new ReflectionClassHandler(),
+    ReflectionClassCommand::class
+);
 
-// request for a Bartlett\Reflect\Api\Reflection
-$api = $client->api('reflection');
+$handlerMiddleware = new CommandHandlerMiddleware(
+    new ClassNameExtractor(),
+    $locator,
+    new InvokeInflector()
+);
 
-// perform request, on a data source
+$commandBus = new CommandBus([$handlerMiddleware]);
+
+// perform request, on a data source with two analysers (structure, loc)
 $dataSource = dirname(__DIR__) . '/src';
+$analysers  = ['reflection'];
 
-// equivalent to CLI command `phpreflect reflection:class Bartlett\Reflect ../src`
-$model = $api->class('Bartlett\\Reflect', $dataSource);
+$command = new ReflectionClassCommand(\Bartlett\Reflect::class, $dataSource, 'txt');
+
+// equivalent to CLI command `phpreflect bartlett:reflection:class Bartlett\Reflect ../src`
+$model = $commandBus->handle($command);
 
 echo $model;

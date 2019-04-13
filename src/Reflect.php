@@ -344,6 +344,10 @@ class Reflect extends AbstractDispatcher
             $metrics = array_merge($metrics, (array)$analyser->getMetrics());
         }
 
+        // filter results with `reflect.terminate` event
+        $event = $this->dispatch(Events::TERMINATE, ['metrics' => $metrics]);
+        $metrics = $event['metrics'];
+
         return $metrics;
     }
 }

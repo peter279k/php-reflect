@@ -34,9 +34,7 @@ $handlerMiddleware = new CommandHandlerMiddleware(
 
 $commandBus = new CommandBus([$handlerMiddleware]);
 
-// perform request, on a data source with two analysers (structure, loc)
 $dataSource = dirname(__DIR__) . '/src';
-$analysers  = ['reflection'];
 
 $command = new ReflectionClassCommand(\Bartlett\Reflect::class, $dataSource, 'txt');
 

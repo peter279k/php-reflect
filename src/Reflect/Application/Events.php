@@ -68,6 +68,17 @@ final class Events
      * @var string
      */
     const COMPLETE = 'reflect.complete';
+    
+    /**
+     * The TERMINATE event allows you to filter results before returning.
+     *
+     * The event listener method receives a Symfony\Component\EventDispatcher\GenericEvent
+     * instance with following arguments :
+     * - `metrics` results of data source analysis
+     *
+     * @var string
+     */
+    const TERMINATE = 'reflect.terminate';
 
     /**
      * The BUILD event allows you to learn what are processes applied during AST building.

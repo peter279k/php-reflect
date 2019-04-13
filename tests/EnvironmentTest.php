@@ -32,7 +32,7 @@ use Bartlett\Reflect\Presentation\Console\Application;
  */
 class EnvironmentTest extends \PHPUnit\Framework\TestCase
 {
-    const DIST_RC = 'phpreflect.json.dist';
+    private const DIST_RC = 'phpreflect.json.dist';
 
     /**
      * Clean-up single test environment
@@ -52,11 +52,11 @@ class EnvironmentTest extends \PHPUnit\Framework\TestCase
      */
     public function testDefaultEnvironmentVariables()
     {
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('No configuration file found in BARTLETT_SCAN_DIR paths');
-
         $app = new Application("phpReflect");
-        $app->getJsonConfigFilename();
+        $this->assertEquals(
+            '',
+            $app->getJsonConfigFilename()
+        );
     }
 
     /**
@@ -69,11 +69,11 @@ class EnvironmentTest extends \PHPUnit\Framework\TestCase
         putenv("BARTLETTRC=" . self::DIST_RC);
         putenv("BARTLETT_SCAN_DIR=" . getcwd());
 
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('No configuration file found in BARTLETT_SCAN_DIR paths');
-
         $app = new Application("phpReflect");
-        $app->getJsonConfigFilename();
+        $this->assertEquals(
+            '',
+            $app->getJsonConfigFilename()
+        );
     }
 
     /**

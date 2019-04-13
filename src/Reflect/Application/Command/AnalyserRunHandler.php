@@ -61,7 +61,7 @@ class AnalyserRunHandler extends AnalyserBaseHandler implements CommandHandlerIn
         }
 
         $pm = new Reflect\Plugin\PluginManager($this->eventDispatcher, $this->configFilename);
-        if ($command->withPlugins()) {
+        if (!empty($this->configFilename) && $command->withPlugins()) {
             $pm->registerPlugins();
         }
 

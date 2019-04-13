@@ -41,7 +41,9 @@ abstract class AnalyserBaseHandler
         $namespaces = [];
 
         $am = new AnalyserManager($namespaces, $this->configFilename);
-        $am->registerAnalysers();
+        if (!empty($this->configFilename)) {
+            $am->registerAnalysers();
+        }
 
         return $am;
     }

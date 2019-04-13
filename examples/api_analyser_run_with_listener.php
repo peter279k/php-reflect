@@ -12,18 +12,17 @@
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-use Bartlett\Reflect\Client;
-
+use Bartlett\Reflect\Application\Command\AnalyserRunCommand;
+use Bartlett\Reflect\Application\Command\AnalyserRunHandler;
+use League\Tactician\CommandBus;
+use League\Tactician\Handler\CommandHandlerMiddleware;
+use League\Tactician\Handler\Locator\InMemoryLocator;
+use League\Tactician\Handler\CommandNameExtractor\ClassNameExtractor;
+use League\Tactician\Handler\MethodNameInflector\InvokeInflector;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
-// creates an instance of client
-$client = new Client();
-
-// request for a Bartlett\Reflect\Api\Analyser
-$api = $client->api('analyser');
-
-$dispatcher = $api->getEventDispatcher();
-
+$dispatcher = new EventDispatcher();
 $dispatcher->addListener(
     'reflect.progress',
     function (GenericEvent $e) {
@@ -35,11 +34,30 @@ $dispatcher->addListener(
     }
 );
 
+$locator = new InMemoryLocator();
+$locator->addHandler(
+    new AnalyserRunHandler(
+        $dispatcher,
+        __DIR__ . '/YourNamespace/yournamespace.json'
+    ),
+    AnalyserRunCommand::class
+);
+
+$handlerMiddleware = new CommandHandlerMiddleware(
+    new ClassNameExtractor(),
+    $locator,
+    new InvokeInflector()
+);
+
+$commandBus = new CommandBus([$handlerMiddleware]);
+
 // perform request, on a data source with default analyser (structure)
 $dataSource = dirname(__DIR__) . '/src';
-$analysers  = array('structure');
+$analysers  = ['structure'];
 
-// equivalent to CLI command `phpreflect analyser:run ../src`
-$metrics = $api->run($dataSource, $analysers);
+$command = new AnalyserRunCommand($dataSource, $analysers, false);
+
+// equivalent to CLI command `phpreflect bartlett:analyser:run ../src`
+$metrics = $commandBus->handle($command);
 
 var_export($metrics);
